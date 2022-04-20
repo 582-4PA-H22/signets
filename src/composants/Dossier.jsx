@@ -7,10 +7,9 @@ import MenuItem from '@mui/material/MenuItem';
 import couvertureDefaut from '../images/couverture-defaut.webp';
 import { formaterDate } from '../code/helper';
 import { useState } from 'react';
-import * as dossierModele from '../code/dossier-modele';
 import ModificationDossier from './ModificationDossier';
 
-export default function Dossier({id, titre, couleur, dateModif, couverture, supprimerDossier}) {
+export default function Dossier({id, titre, couleur, dateModif, couverture, supprimerDossier, modifierDossier}) {
   // État du menu contextuel
   const [eltAncrage, setEltAncrage] = useState(null);
   const ouvertMenu = Boolean(eltAncrage);
@@ -85,7 +84,7 @@ export default function Dossier({id, titre, couleur, dateModif, couverture, supp
         <MenuItem onClick={gererFormulaireModifier}>Modifier</MenuItem>
         <MenuItem onClick={gererSupprimer}>Supprimer</MenuItem>
       </Menu>
-      <ModificationDossier ouvert={ouvertFrm} setOuvert={setOuvertFrm} id_p={id} titre_p={titre} couleur_p={couleur} couverture_p={couverture} />
+      <ModificationDossier modifierDossier={modifierDossier} ouvert={ouvertFrm} setOuvert={setOuvertFrm} id={id} titre_p={titre} couleur_p={couleur} couverture_p={couverture} />
     </article>
   );
 }

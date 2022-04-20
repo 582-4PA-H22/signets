@@ -7,7 +7,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { TwitterPicker } from 'react-color';
 import { useState } from 'react';
 
-export default function ModificationDossier({ id, titre_p, couleur_p, couverture_p, ouvert, setOuvert, gererModifierDossier }) {
+export default function ModificationDossier({ id, titre_p, couleur_p, couverture_p, ouvert, setOuvert, modifierDossier }) {
     const [titre, setTitre] = useState(titre_p);
     const [couverture, setCouverture] = useState(couverture_p);
     const [couleur, setCouleur] = useState(couleur_p);
@@ -20,16 +20,16 @@ export default function ModificationDossier({ id, titre_p, couleur_p, couverture
         // Il faut réinitialiser les états des valeurs de formulaire car sinon 
         // les dernières valeurs saisies seront sauvegardées dans les 'états'
         // du composant
-        setTitre('');
-        setCouverture('');
-        setCouleur('#000')
+        // setTitre('');
+        // setCouverture('');
+        // setCouleur('#000');
         setOuvert(false);
     };
 
     function gererSoumettre() {
         // Code qui gère l'ajout dans Firestore
         if(titre.search(/[a-z]{2,}/i) != -1) {
-            gererModifierDossier(titre, couverture, couleur);
+            modifierDossier(id, titre, couverture, couleur);
             gererFermer();
         }
     }
@@ -49,7 +49,7 @@ export default function ModificationDossier({ id, titre_p, couleur_p, couverture
                         fullWidth
                         variant="standard"
                         onChange={e => setTitre(e.target.value)}
-                        value={titre_p}
+                        value={titre}
                     />
                     {/* URL de l'image */}
                     <TextField
@@ -61,6 +61,7 @@ export default function ModificationDossier({ id, titre_p, couleur_p, couverture
                         variant="standard"
                         style={{ marginBottom: "1.5rem" }}
                         onChange={e => setCouverture(e.target.value)}
+                        value={couverture}
                     />
                     {/* Choix de couleur */}
                     <TwitterPicker
