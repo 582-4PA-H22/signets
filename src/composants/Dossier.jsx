@@ -7,7 +7,7 @@ import MenuItem from '@mui/material/MenuItem';
 import couvertureDefaut from '../images/couverture-defaut.webp';
 import { formaterDate } from '../code/helper';
 import { useState } from 'react';
-import ModificationDossier from './ModificationDossier';
+import FrmDossier from './FrmDossier';
 
 export default function Dossier({id, titre, couleur, dateModif, couverture, supprimerDossier, modifierDossier}) {
   // État du menu contextuel
@@ -26,7 +26,7 @@ export default function Dossier({id, titre, couleur, dateModif, couverture, supp
     setEltAncrage(null);
   };
 
-  function gererFormulaireModifier() {
+  function afficherFormulaireDossier() {
     // Ouvrir le formulaire de modification du dossier (transférer l'info sir le
     // dossier dans le formulaire) ...
     setOuvertFrm(true);
@@ -81,10 +81,10 @@ export default function Dossier({id, titre, couleur, dateModif, couverture, supp
           horizontal: 'right',
         }}
       >
-        <MenuItem onClick={gererFormulaireModifier}>Modifier</MenuItem>
+        <MenuItem onClick={afficherFormulaireDossier}>Modifier</MenuItem>
         <MenuItem onClick={gererSupprimer}>Supprimer</MenuItem>
       </Menu>
-      <ModificationDossier modifierDossier={modifierDossier} ouvert={ouvertFrm} setOuvert={setOuvertFrm} id={id} titre_p={titre} couleur_p={couleur} couverture_p={couverture} />
+      <FrmDossier gererActionDossier={modifierDossier} ouvert={ouvertFrm} setOuvert={setOuvertFrm} id={id} titre_p={titre} couleur_p={couleur} couverture_p={couverture} />
     </article>
   );
 }

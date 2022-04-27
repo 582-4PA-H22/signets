@@ -7,36 +7,35 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { TwitterPicker } from 'react-color';
 import { useState } from 'react';
 
-export default function ModificationDossier({ id, titre_p, couleur_p, couverture_p, ouvert, setOuvert, modifierDossier }) {
+export default function FrmDossier({ id=null, titre_p='', couleur_p='#000', couverture_p='', ouvert, setOuvert, gererActionDossier }) {
     const [titre, setTitre] = useState(titre_p);
     const [couverture, setCouverture] = useState(couverture_p);
     const [couleur, setCouleur] = useState(couleur_p);
 
-    const gererOuvrir = () => {
-        setOuvert(true);
-    };
-
-    const gererFermer = () => {
-        // Il faut réinitialiser les états des valeurs de formulaire car sinon 
-        // les dernières valeurs saisies seront sauvegardées dans les 'états'
-        // du composant
-        // setTitre('');
-        // setCouverture('');
-        // setCouleur('#000');
+    function viderEtFermerFrm() {
+        setTitre(titre_p);
+        setCouverture(couverture_p);
+        setCouleur(couleur_p);
         setOuvert(false);
     };
 
     function gererSoumettre() {
         // Code qui gère l'ajout dans Firestore
-        if(titre.search(/[a-z]{2,}/i) != -1) {
-            modifierDossier(id, titre, couverture, couleur);
-            gererFermer();
+        if(titre.search(/[a-z]/i) != -1) {
+            gererActionDossier(id, titre, couverture, couleur);
+            
+            // On doit l'appeler UNIQUEMENT lorsqu'on ajoute un nouveau dossier
+            if(id === null) {
+                viderEtFermerFrm();
+            }
+            
+            setOuvert(false);
         }
     }
 
     return (
         <div>
-            <Dialog open={ouvert} onClose={gererFermer}>
+            <Dialog open={ouvert} onClose={viderEtFermerFrm}>
                 <DialogTitle>Modifier ce dossier</DialogTitle>
                 <DialogContent>
                     {/* Titre du dossier */}
@@ -73,7 +72,7 @@ export default function ModificationDossier({ id, titre_p, couleur_p, couverture
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={gererFermer}>Annuler</Button>
+                    <Button onClick={viderEtFermerFrm}>Annuler</Button>
                     <Button onClick={gererSoumettre}>Soumettre</Button>
                 </DialogActions>
             </Dialog>
