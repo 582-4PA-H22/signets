@@ -41,6 +41,11 @@ export default function ListeDossiers({utilisateur, dossiers, setDossiers}) {
     );
   }
 
+  function ajouterSignet(idDossier, url) {
+    console.log("ID du dossier et URL à ajouter : ", idDossier, url);
+    
+  }
+
   return (
     <ul className="ListeDossiers">
       {
@@ -48,7 +53,7 @@ export default function ListeDossiers({utilisateur, dossiers, setDossiers}) {
           // Remarquez l'utilisation du "spread operator" pour "étaler" les 
           // propriétés de l'objet 'dossier' reçu en paramètre de la fonction
           // fléchée dans les props du composant 'Dossier' !!
-          dossier =>  <li key={dossier.id}><Dossier {...dossier} supprimerDossier={supprimerDossier} modifierDossier={modifierDossier} /></li>
+          dossier =>  <li key={dossier.id}><Dossier {...dossier} supprimerDossier={supprimerDossier} modifierDossier={modifierDossier} ajouterSignet={ajouterSignet} /></li>
         )
       }
     </ul>

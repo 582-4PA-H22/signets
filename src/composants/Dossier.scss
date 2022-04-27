@@ -7,7 +7,18 @@
   cursor: pointer;
   overflow: hidden;
 
+  &.dropzone {
+    box-shadow: 0 0 10px 5px rgba(0, 150, 0, 0.75);
+
+    .deplacer,
+    .modifier {
+      pointer-events: none;
+    }
+  }
+
   .couverture {
+    pointer-events: none;
+
     height: 200px;
     img {
       width: 300px;
@@ -16,7 +27,6 @@
     }
   }
 
-  
   .deplacer {
     position: absolute;
     top: 10px;
@@ -30,6 +40,7 @@
   }
 
   .info {
+    pointer-events: none;
     padding: 1rem 0.75rem;
     h2 {
       margin: 0;

@@ -9,7 +9,7 @@ import { formaterDate } from '../code/helper';
 import { useState } from 'react';
 import FrmDossier from './FrmDossier';
 
-export default function Dossier({id, titre, couleur, dateModif, couverture, supprimerDossier, modifierDossier}) {
+export default function Dossier({id, titre, couleur, dateModif, couverture, supprimerDossier, modifierDossier, ajouterSignet}) {
   // État du menu contextuel
   const [eltAncrage, setEltAncrage] = useState(null);
   const ouvertMenu = Boolean(eltAncrage);
@@ -42,6 +42,7 @@ export default function Dossier({id, titre, couleur, dateModif, couverture, supp
     gererFermerMenu();
   }
 
+  // [TODO : enlever d'ici...]
   // Tester si l'URL dans la variable couverture est valide
   let urlCouverture;
   try {
@@ -50,14 +51,41 @@ export default function Dossier({id, titre, couleur, dateModif, couverture, supp
   catch(e) {
     couverture = couvertureDefaut;
   }
+
+  // État dropzone
+  const [dropzone, setDropzone] = useState(false);
+
+  function gererDragEnter(evt) {
+    evt.preventDefault();
+    setDropzone(true);
+  }
+
+  function gererDragOver(evt) {
+    evt.preventDefault();
+  }
+
+  function gererDragLeave(evt) {
+    setDropzone(false);    
+  }
+
+  function gererDrop(evt) {
+    evt.preventDefault();
+    setDropzone(false);
+    let url = evt.dataTransfer.getData("URL");
+    // On aimerait aussi chercher le TITLE (une autre fois)
+
+    // On appelle la méthode d'ajout d'un signet dans un dossier définie dans le composant
+    // parent et passée ici en props
+    // Elle prend deux arguments : id du dossier et chaîne de l'url glissée/déposée
+    ajouterSignet(id, url);
+  }
+
   return (
-    // Remarquez l'objet JS donné à la valeur de l'attribut style en JSX, voir : 
-    // https://reactjs.org/docs/dom-elements.html#style
-    <article className="Dossier" style={{backgroundColor: couleur}}>
+    <article className={"Dossier" + (dropzone ? ' dropzone': '')} onDrop={gererDrop} onDragEnter={gererDragEnter} onDragOver={gererDragOver} onDragLeave={gererDragLeave} style={{backgroundColor: couleur}}>
+      <IconButton className="deplacer" aria-label="déplacer" disableRipple={true}>
+        <SortIcon />
+      </IconButton>
       <div className="couverture">
-        <IconButton className="deplacer" aria-label="déplacer" disableRipple={true}>
-          <SortIcon />
-        </IconButton>
         <img src={couverture || couvertureDefaut} alt={titre}/>
       </div>
       <div className="info">
