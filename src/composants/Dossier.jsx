@@ -1,7 +1,9 @@
-import './Dossier.scss'; 
+import './Dossier.scss';
 import IconButton from '@mui/material/IconButton';
+import ButtonUnstyled from '@mui/base/ButtonUnstyled';
 import SortIcon from '@mui/icons-material/Sort';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import CloseIcon from '@mui/icons-material/Close';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import couvertureDefaut from '../images/couverture-defaut.webp';
@@ -11,14 +13,17 @@ import FrmDossier from './FrmDossier';
 import * as signetModele from '../code/signet-modele';
 import { UtilisateurContext } from './Appli';
 
-export default function Dossier({id, titre, couleur, dateModif, couverture, top3, supprimerDossier, modifierDossier, ajouterSignet}) {
+export default function Dossier({ id, titre, couleur, dateModif, couverture, top3, supprimerDossier, modifierDossier, ajouterSignet }) {
+  // État de la carte active
+  const [carteActive, setCarteActive] = useState(false);
+  
   // Identifiant de l'utilisateur 
   const utilisateur = useContext(UtilisateurContext)
   const uid = utilisateur.uid;
-  
+
   // État des signets dans ce dossier
   const [signets, setSignets] = useState(top3 || []);
-  
+
   // État du menu contextuel
   const [eltAncrage, setEltAncrage] = useState(null);
   const ouvertMenu = Boolean(eltAncrage);
@@ -31,7 +36,7 @@ export default function Dossier({id, titre, couleur, dateModif, couverture, top3
   };
 
   function gererFermerMenu() {
-    
+
     setEltAncrage(null);
   };
 
@@ -42,7 +47,7 @@ export default function Dossier({id, titre, couleur, dateModif, couverture, top3
     // ... puis fermer le menu.
     gererFermerMenu();
   }
-  
+
   function gererSupprimer() {
     // Appeler la fonction de ListeDossiers qui gère la suppression dans Firestore
     supprimerDossier(id);
@@ -57,7 +62,7 @@ export default function Dossier({id, titre, couleur, dateModif, couverture, top3
   try {
     urlCouverture = new URL(couverture);
   }
-  catch(e) {
+  catch (e) {
     couverture = couvertureDefaut;
   }
 
@@ -76,7 +81,7 @@ export default function Dossier({id, titre, couleur, dateModif, couverture, top3
   }
 
   function gererDragLeave(evt) {
-    setDropzone(false);    
+    setDropzone(false);
   }
 
   function gererDrop(evt) {
@@ -93,7 +98,7 @@ export default function Dossier({id, titre, couleur, dateModif, couverture, top3
 
   function ajouterSignet(idDossier, url) {
     // signets[signets.length] = {adresse: url, titre: 'bla bla'};
-    const derniers3 = [...signets, {adresse: url, titre: 'bla bla'}].slice(-3);
+    const derniers3 = [...signets, { adresse: url, titre: 'bla bla' }].slice(-3);
     console.log("Derniers 3 : ", derniers3);
     signetModele.creer(uid, idDossier, derniers3).then(
       () => setSignets(derniers3)
@@ -101,37 +106,52 @@ export default function Dossier({id, titre, couleur, dateModif, couverture, top3
   }
 
   return (
-    <article className={"Dossier" + (dropzone ? ' dropzone': '')} onDrop={gererDrop} onDragEnter={gererDragEnter} onDragOver={gererDragOver} onDragLeave={gererDragLeave} style={{backgroundColor: couleur}}>
-      <IconButton className="deplacer" aria-label="déplacer" disableRipple={true}>
-        <SortIcon />
-      </IconButton>
-      <div className="couverture">
-        <img src={couverture || couvertureDefaut} alt={titre}/>
+    <article className={"Dossier" + (dropzone ? ' dropzone' : '') + (carteActive ? ' actif' : '')} onDrop={gererDrop} onDragEnter={gererDragEnter} onDragOver={gererDragOver} onDragLeave={gererDragLeave} style={{ backgroundColor: couleur }}>
+      <div className="carte">
+        <div className="endroit" onClick={() => setCarteActive(true)}>
+          <IconButton className="deplacer" aria-label="déplacer" disableRipple={true}>
+            <SortIcon />
+          </IconButton>
+          <div className="couverture">
+            <img src={couverture || couvertureDefaut} alt={titre} />
+          </div>
+          <div className="info">
+            <h2>{titre}</h2>
+            <p>Modifié : {formaterDate(dateModif.seconds)}</p>
+          </div>
+          <IconButton onClick={gererMenu} className="modifier" aria-label="modifier" size="small">
+            <MoreVertIcon />
+          </IconButton>
+          <Menu
+            id="menu-contextuel-dossier"
+            anchorEl={eltAncrage}
+            open={ouvertMenu}
+            onClose={gererFermerMenu}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right',
+            }}
+          >
+            <MenuItem onClick={afficherFormulaireDossier}>Modifier</MenuItem>
+            <MenuItem onClick={gererSupprimer}>Supprimer</MenuItem>
+          </Menu>
+        </div>
+        <div className="envers">
+          <ButtonUnstyled onClick={() => setCarteActive(false)} className="tourner-carte" size="small">
+            <CloseIcon />
+          </ButtonUnstyled>
+            {
+              signets.map(
+                signet => <a href={signet.adresse} target="_blank">{signet.titre}</a>
+              )
+            }
+        </div>
       </div>
-      <div className="info">
-        <h2>{titre}</h2>
-        <p>Modifié : {formaterDate(dateModif.seconds)}</p>
-      </div>
-      <IconButton onClick={gererMenu} className="modifier" aria-label="modifier" size="small">
-        <MoreVertIcon />
-      </IconButton>
-      <Menu
-        id="menu-contextuel-dossier"
-        anchorEl={eltAncrage}
-        open={ouvertMenu}
-        onClose={gererFermerMenu}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-      >
-        <MenuItem onClick={afficherFormulaireDossier}>Modifier</MenuItem>
-        <MenuItem onClick={gererSupprimer}>Supprimer</MenuItem>
-      </Menu>
+
       <FrmDossier gererActionDossier={modifierDossier} ouvert={ouvertFrm} setOuvert={setOuvertFrm} id={id} titre_p={titre} couleur_p={couleur} couverture_p={couverture} />
     </article>
   );

@@ -16,48 +16,104 @@
     }
   }
 
-  .couverture {
-    pointer-events: none;
+  &.actif .carte {
+    transform: rotateY(180deg);
+  }
 
-    height: 200px;
-    img {
-      width: 300px;
-      height: 200px;
-      object-fit: cover;
+  .carte {
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.5s;
+
+    .endroit,
+    .envers {
+      height: 100%;
+      width: 100%;
+      top: 0;
+      left: 0;
+      backface-visibility: hidden;
+    }
+
+    .endroit {
+      position: relative;
+
+      .deplacer {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        cursor: grab;
+        background-color: rgba($color: #000000, $alpha: 0.4);
+        color: #ccc;
+        &:hover {
+          background-color: rgba($color: #000000, $alpha: 0.5);
+        }
+      }
+    
+      .modifier {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background-color: rgba($color: #333, $alpha: 0.4);
+        color: #ccc;
+        &:hover {
+          background-color: rgba($color: #333, $alpha: 0.5);
+        }
+      }
+
+      .couverture {
+        pointer-events: none;
+        height: 200px;
+        img {
+          width: 300px;
+          height: 200px;
+          object-fit: cover;
+        }
+      }
+
+      .info {
+        pointer-events: none;
+        padding: 1rem 0.75rem;
+        height: 150px;
+        h2 {
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          margin: 0;
+          padding: 0;
+          font-weight: normal;
+          font-family: Roboto Slab;
+        }
+      }
+    }
+
+    .envers {
+      transform: rotateY(180deg);
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+
+      .tourner-carte {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background-color: #000000;
+        color: #fff;
+        width: 3rem;
+        height: 3rem;
+        border: none;
+      }
+
+      a {
+        padding: 0.5rem;
+        margin: 0.5rem;
+        border-top: 1px dotted #eee;
+        border-bottom: 1px dotted #eee;
+      }
     }
   }
 
-  .deplacer {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    cursor: grab;
-    background-color: rgba($color: #000000, $alpha: 0.4);
-    color: #ccc;
-    &:hover {
-      background-color: rgba($color: #000000, $alpha: 0.5);
-    }
-  }
+  
 
-  .info {
-    pointer-events: none;
-    padding: 1rem 0.75rem;
-    h2 {
-      margin: 0;
-      padding: 0;
-      font-weight: normal;
-      font-family: Roboto Slab;
-    }
-  }
-
-  .modifier {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background-color: rgba($color: #333, $alpha: 0.4);
-    color: #ccc;
-    &:hover {
-      background-color: rgba($color: #333, $alpha: 0.5);
-    }
-  }
+  
 }
