@@ -31,29 +31,37 @@ export default function Dossier({ id, titre, couleur, dateModif, couverture, top
   // État du formulaire de modification
   const [ouvertFrm, setOuvertFrm] = useState(false);
 
-  function gererMenu(event) {
-    setEltAncrage(event.currentTarget);
+  function gererMenu(evt) {
+    setEltAncrage(evt.currentTarget);
+    evt.stopPropagation();
   };
 
-  function gererFermerMenu() {
-
+  function gererFermerMenu(evt) {
     setEltAncrage(null);
+    // Arrêter le "bubbling" de l'événement
+    evt.stopPropagation();
   };
 
-  function afficherFormulaireDossier() {
+  function afficherFormulaireDossier(evt) {
     // Ouvrir le formulaire de modification du dossier (transférer l'info sir le
     // dossier dans le formulaire) ...
     setOuvertFrm(true);
     // ... puis fermer le menu.
-    gererFermerMenu();
+    gererFermerMenu(evt);
+
+    // Arrêter le "bubbling" de l'événement
+    evt.stopPropagation();
   }
 
-  function gererSupprimer() {
+  function gererSupprimer(evt) {
     // Appeler la fonction de ListeDossiers qui gère la suppression dans Firestore
     supprimerDossier(id);
 
     // ... puis fermer le menu.
-    gererFermerMenu();
+    gererFermerMenu(evt);
+
+    // Arrêter le "bubbling" de l'événement
+    evt.stopPropagation();
   }
 
   // [TODO : enlever d'ici...]
@@ -89,16 +97,32 @@ export default function Dossier({ id, titre, couleur, dateModif, couverture, top
     setDropzone(false);
     let url = evt.dataTransfer.getData("URL");
     // On aimerait aussi chercher le TITLE (une autre fois)
+    // Chercher l'URL par fetch() et lire le contenu de la page Web, et 
+    // sélectionner la balise TITLE et son innerText...
 
-    // On appelle la méthode d'ajout d'un signet dans un dossier définie dans le composant
-    // parent et passée ici en props
-    // Elle prend deux arguments : id du dossier et chaîne de l'url glissée/déposée
-    ajouterSignet(id, url);
+    // Ne fonctionne que si on peut héberger un script serveur sur le même domaine
+    //  pour faire l'extraction des titres des URLs....
+    fetch("https://cors-anywhere.herokuapp.com/" + url)
+    .then(reponse => reponse.text())
+    .then(
+      chaineDoc => {
+        const doc = new DOMParser().parseFromString(chaineDoc, "text/html");
+        const titre = doc.querySelectorAll('title')[0];
+        console.log(titre);
+        // On appelle la méthode d'ajout d'un signet dans un dossier définie dans le composant
+        // parent et passée ici en props
+        // Elle prend deux arguments : id du dossier et chaîne de l'url glissée/déposée
+        ajouterSignet(id, url, titre.innerText);
+      }
+    );
+
+    // ALternative sans les titre
+    //ajouterSignet(id, url, "Titre à venir...");
   }
 
-  function ajouterSignet(idDossier, url) {
+  function ajouterSignet(idDossier, url, titreUrl) {
     // signets[signets.length] = {adresse: url, titre: 'bla bla'};
-    const derniers3 = [...signets, { adresse: url, titre: 'bla bla' }].slice(-3);
+    const derniers3 = [...signets, { adresse: url, titre: titreUrl }].slice(-3);
     console.log("Derniers 3 : ", derniers3);
     signetModele.creer(uid, idDossier, derniers3).then(
       () => setSignets(derniers3)
@@ -146,7 +170,7 @@ export default function Dossier({ id, titre, couleur, dateModif, couverture, top
           </ButtonUnstyled>
             {
               signets.map(
-                signet => <a href={signet.adresse} target="_blank">{signet.titre}</a>
+                (signet, position) => <a key={position} href={signet.adresse} target="_blank">{signet.titre}</a>
               )
             }
         </div>
